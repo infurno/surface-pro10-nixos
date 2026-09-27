@@ -26,12 +26,12 @@ in
   home.username = "hal";
   home.homeDirectory = "/home/hal";
   home.stateVersion = "24.11";
-  # Put ~/.local/bin and mise shims on PATH for omp (oh-my-pi)
+
+  # Put ~/.local/bin and mise shims on PATH for omp and agent CLIs
   home.sessionPath = [
     "$HOME/.local/bin"
     "$HOME/.local/share/mise/shims"
   ];
-
 
   # Serpantinum Desktop Shell (Liquid Glass theme, top modular bar)
   programs.serpantinum = {
@@ -105,6 +105,7 @@ in
     gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     gtk4.theme = config.gtk.theme;
   };
+
   # Automatically hook mise in bash interactive sessions
   programs.bash = {
     enable = true;
@@ -115,12 +116,12 @@ in
     '';
   };
 
-
   # Declaratively manage niri config.kdl
   xdg.configFile."niri/config.kdl" = {
     source = ./dotfiles/niri/config.kdl;
     force = true;
   };
+
   # Pre-configure all AI agent CLIs (omp, claude, codex, gemini, copilot, etc.)
   xdg.configFile."mise/config.toml".text = ''
     [tools]
@@ -140,18 +141,152 @@ in
     auto_prune = false
   '';
 
+  # Dedicated Web Apps / PWAs (Chromium App Mode)
+  xdg.desktopEntries = {
+    discord = {
+      name = "Discord";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://discord.com/app";
+      icon = "discord";
+      categories = [ "Network" "Chat" ];
+    };
+    whatsapp = {
+      name = "WhatsApp";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://web.whatsapp.com";
+      icon = "whatsapp";
+      categories = [ "Network" "Chat" ];
+    };
+    x-twitter = {
+      name = "X";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://x.com";
+      icon = "twitter";
+      categories = [ "Network" "Feed" ];
+    };
+    zoom-web = {
+      name = "Zoom";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://app.zoom.us/wc";
+      icon = "zoom";
+      categories = [ "Network" "VideoConference" ];
+    };
+    youtube = {
+      name = "YouTube";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://youtube.com";
+      icon = "youtube";
+      categories = [ "AudioVideo" ];
+    };
+    teams = {
+      name = "Microsoft Teams";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://teams.microsoft.com";
+      icon = "teams";
+      categories = [ "Network" "Chat" ];
+    };
+    outlook = {
+      name = "Microsoft Outlook";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://outlook.live.com/mail/";
+      icon = "ms-outlook";
+      categories = [ "Office" "Email" ];
+    };
+    google-messages = {
+      name = "Google Messages";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://messages.google.com/web";
+      icon = "messages";
+      categories = [ "Network" "Chat" ];
+    };
+    google-maps = {
+      name = "Google Maps";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://maps.google.com";
+      icon = "maps";
+      categories = [ "Utility" ];
+    };
+    google-photos = {
+      name = "Google Photos";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://photos.google.com";
+      icon = "photos";
+      categories = [ "Graphics" "Photography" ];
+    };
+    tailscale-admin = {
+      name = "Tailscale Admin";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://login.tailscale.com/admin";
+      icon = "network-vpn";
+      categories = [ "Settings" "Network" ];
+    };
+  };
 
-  # Full Application & Tool Suite (parity with rogue)
+  # Full Application & Tool Suite (Exact parity with rogue)
   home.packages = with pkgs; [
-    # Agent & Tool Manager
+    # ------------------------------------------------------------- Web Browsers
+    brave
+    chromium
+    firefox
+
+    # --------------------------------------------------- Media, Audio & Video
+    vlc
+    mpv
+    feishin
+    easyeffects
+    obs-studio
+    pavucontrol
+    imv
+
+    # ----------------------------------------------- Productivity & Office/Notes
+    obsidian
+    xournalpp
+    rnote
+    evince
+    pinta
+    kdePackages.dolphin
+    nautilus
+    kdePackages.ark
+    swappy
+
+    # --------------------------------------------------- Communication & Social
+    thunderbird
+    chatterino2
+    localsend
+    rustdesk-flutter
+    librepods
+
+    # ------------------------------------------------------- Gaming & Emulation
+    lutris
+    prismlauncher
+    winetricks
+
+    # ------------------------------------------------------- Terminal Emulators
+    foot
+    kitty
+    wezterm
+
+    # ------------------------------------------------------------ Text Editors
+    neovim
+    vim-full
+
+    # ------------------------------------------------- Terminal Apps & Multiplexers
+    yazi
+    btop
+    lazydocker
+    dua
+    lazygit
+    aerc
+    himalaya
+    zellij
+    tmux
+
+    # ----------------------------------------- Developer Runtimes & Compilers
+    nodejs_22
+    python3
+    uv
+    go
+    rustc
+    cargo
+    clang
+    llvm
+    gcc
+    gnumake
+    cmake
     mise
     gh
-    syncthing
-    mole
     git
 
-    # Shell / Navigation / Prompt
-    kitty
+    # ------------------------------------------------- Search, Prompt & Helpers
     starship
     zoxide
     fzf
@@ -159,22 +294,6 @@ in
     bat
     ripgrep
     fd
-    yazi
-    lazygit
-    difftastic
-
-    # System / Hardware / Monitor
-    btop
-    fastfetch
-    cpufetch
-    clinfo
-    dust
-    duf
-    cyme
-    hyperfine
-
-    # Text / Markdown / Formatters
-    neovim
     glow
     tldr
     tokei
@@ -182,7 +301,13 @@ in
     jq
     yq-go
 
-    # Network / Transfer
+    # --------------------------------------------------- Media & CLI Processors
+    ffmpeg
+    ffmpegthumbnailer
+    imagemagick
+    yt-dlp
+
+    # --------------------------------------------------- Diagnostics & Transfer
     wget
     curl
     curlie
@@ -193,24 +318,21 @@ in
     doggo
     rsync
     rclone
-
-    # Archives & Compression
     unzip
     tree
+    procs
+    dust
+    duf
+    fastfetch
+    cpufetch
+    clinfo
+    cyme
+    hyperfine
+    difftastic
 
-    # Desktop Applications
-    obsidian
-    xournalpp
-    rnote
-    localsend
-    vlc
-    mpv
-    swappy
-    pavucontrol
-    easyeffects
-    pinta
-    brave
-    firefox
+    # --------------------------------------------------------- Core Utilities
+    syncthing
+    mole
   ];
 
   # ----------------------------------------------------------------- syncthing --

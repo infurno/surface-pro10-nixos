@@ -202,6 +202,21 @@ in
   security.sudo.wheelNeedsPassword = false;
   # Allow unfree packages (Obsidian, Brave, Steam, etc.)
   nixpkgs.config.allowUnfree = true;
+  # Tailscale mesh networking
+  services.tailscale.enable = true;
+
+  # Docker container runtime
+  virtualisation.docker.enable = true;
+
+  # Steam & GameMode gaming platform
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = false;
+    gamescopeSession.enable = true;
+  };
+  programs.gamemode.enable = true;
+
 
   # Nix Package Manager Configuration
   nix.settings = {
