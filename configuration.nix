@@ -123,6 +123,8 @@ in
 
   # Low-Latency Audio via PipeWire
   security.rtkit.enable = true;
+  services.upower.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;

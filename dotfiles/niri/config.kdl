@@ -41,7 +41,7 @@ input {
 // -----------------------------------------------------------------------------
 layout {
     gaps 8
-    background-color "#050506"
+    background-color "transparent"
 
     preset-column-widths {
         proportion 0.33333
@@ -113,6 +113,11 @@ window-rule {
 }
 
 // Serpantinum Quickshell surfaces
+layer-rule {
+    match namespace="^wallpaper-bg$"
+    place-within-backdrop true
+}
+
 layer-rule {
     match namespace="^quickshell$"
     geometry-corner-radius 14

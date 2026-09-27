@@ -30,10 +30,12 @@ in
   # Put ~/.local/bin and mise shims on PATH for omp and agent CLIs
   home.sessionPath = [
     "$HOME/.local/bin"
+    "$HOME/scripts"
     "$HOME/.local/share/mise/shims"
   ];
 
   # Serpantinum Desktop Shell (Liquid Glass theme, top modular bar)
+
   programs.serpantinum = {
     enable = true;
     settings = {
@@ -350,6 +352,23 @@ in
   # ----------------------------------------------------------------- syncthing --
   # Continuous background file synchronization (syncthing serve)
   # Matches rogue/gambit setup; config is managed via GUI at http://127.0.0.1:8384
+  systemd.user.timers.clear-notifications = {
+    Unit.Description = "Timer to auto-clear notifications periodically";
+    Timer = {
+      OnBootSec = "15m";
+      OnUnitActiveSec = "15m";
+    };
+    Install.WantedBy = [ "timers.target" ];
+  };
+
+  systemd.user.services.clear-notifications = {
+    Unit.Description = "Clear stacked notifications in Serpantinum";
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c \"WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1001 /etc/profiles/per-user/hal/bin/serpantinum ipc call main clearNotifications\"";
+    };
+  };
+
   systemd.user.services.syncthing = {
     Unit = {
       Description = "Syncthing - Open Source Continuous File Synchronization";
