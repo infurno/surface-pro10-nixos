@@ -25,8 +25,56 @@ in
       safe.directory = [ "/etc/nixos" "/etc/nixos/*" ];
     };
   };
-  # Foreign binary compatibility (allows prebuilt binaries like omp/oh-my-pi to run)
+  # Foreign binary compatibility (allows prebuilt binaries like omp, AppImages, and node-pty to run)
   programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+    fuse3
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    cairo
+    cups
+    dbus
+    expat
+    fontconfig
+    freetype
+    gdk-pixbuf
+    glib
+    gtk3
+    libGL
+    libappindicator-gtk3
+    libdrm
+    libglvnd
+    libnotify
+    libpulseaudio
+    libunwind
+    libusb1
+    libuuid
+    libxkbcommon
+    mesa
+    nspr
+    nss
+    pango
+    pipewire
+    systemd
+    vulkan-loader
+    libx11
+    libxscrnsaver
+    libxcomposite
+    libxcursor
+    libxdamage
+    libxext
+    libxfixes
+    libxi
+    libxrandr
+    libxrender
+    libxtst
+    libxcb
+    libxkbfile
+    libxshmfence
+  ];
   # System-wide PATH initialization (ensures ~/.local/bin and mise shims are on PATH for all shells)
   environment.extraInit = ''
     export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
@@ -156,6 +204,7 @@ in
     niriRotate
     surfaceWifi
     surfaceBluetooth
+    appimage-run
 
     # Virtual Keyboard & UI Components
     wvkbd
