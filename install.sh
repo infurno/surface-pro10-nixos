@@ -51,25 +51,21 @@ case "$MODE" in
         WIN_EFI=${WIN_EFI:-/dev/nvme0n1p1}
 
         read -rp "New NixOS Boot Partition to format (e.g. /dev/nvme0n1p4): " NIX_BOOT
-        read -rp "New NixOS LUKS Encrypted Partition to format (e.g. /dev/nvme0n1p5): " NIX_LUKS
+        read -rp "New NixOS Root Partition to format (e.g. /dev/nvme0n1p5): " NIX_ROOT
 
-        echo -e "\n${YELLOW}[!] WARNING: Partition $NIX_BOOT and $NIX_LUKS will be FORMATTED.${RESET}"
+        echo -e "\n${YELLOW}[!] WARNING: Partition $NIX_BOOT and $NIX_ROOT will be FORMATTED (Unencrypted Btrfs).${RESET}"
         read -rp "Type 'YES' to proceed: " CONFIRM
         if [[ "$CONFIRM" != "YES" ]]; then
             echo "Aborted."
             exit 1
         fi
 
-        echo -e "\n${BOLD}[1/6] Formatting NixOS Boot partition...${RESET}"
+        echo -e "\n${BOLD}[1/5] Formatting NixOS Boot partition...${RESET}"
         mkfs.vfat -F 32 -n NIXBOOT "$NIX_BOOT"
 
-        echo -e "\n${BOLD}[2/6] Initializing LUKS2 container...${RESET}"
-        cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --key-size 512 "$NIX_LUKS"
-        cryptsetup open "$NIX_LUKS" cryptroot
-
-        echo -e "\n${BOLD}[3/6] Formatting Btrfs and creating subvolumes...${RESET}"
-        mkfs.btrfs -L nixos /dev/mapper/cryptroot
-        mount /dev/mapper/cryptroot /mnt
+        echo -e "\n${BOLD}[2/5] Formatting Btrfs on root partition and creating subvolumes...${RESET}"
+        mkfs.btrfs -f -L nixos "$NIX_ROOT"
+        mount "$NIX_ROOT" /mnt
 
         btrfs subvolume create /mnt/@
         btrfs subvolume create /mnt/@home
@@ -77,17 +73,17 @@ case "$MODE" in
         btrfs subvolume create /mnt/@swap
         umount /mnt
 
-        echo -e "\n${BOLD}[4/6] Mounting subvolumes with zstd compression...${RESET}"
-        mount -o compress=zstd:1,noatime,space_cache=v2,subvol=@ /dev/mapper/cryptroot /mnt
+        echo -e "\n${BOLD}[3/5] Mounting subvolumes with zstd compression...${RESET}"
+        mount -o compress=zstd:1,noatime,space_cache=v2,subvol=@ "$NIX_ROOT" /mnt
         mkdir -p /mnt/{home,nix,swap,boot,efi}
-        mount -o compress=zstd:2,noatime,space_cache=v2,subvol=@home /dev/mapper/cryptroot /mnt/home
-        mount -o compress=zstd:1,noatime,space_cache=v2,subvol=@nix /dev/mapper/cryptroot /mnt/nix
-        mount -o noatime,subvol=@swap /dev/mapper/cryptroot /mnt/swap
+        mount -o compress=zstd:2,noatime,space_cache=v2,subvol=@home "$NIX_ROOT" /mnt/home
+        mount -o compress=zstd:1,noatime,space_cache=v2,subvol=@nix "$NIX_ROOT" /mnt/nix
+        mount -o noatime,subvol=@swap "$NIX_ROOT" /mnt/swap
 
         mount "$NIX_BOOT" /mnt/boot
         mount "$WIN_EFI" /mnt/efi
 
-        echo -e "\n${BOLD}[5/6] Creating 24GB Hibernation Swapfile...${RESET}"
+        echo -e "\n${BOLD}[4/5] Creating 24GB Hibernation Swapfile...${RESET}"
         btrfs filesystem mkswapfile --size 24g /mnt/swap/swapfile
         swapon /mnt/swap/swapfile
         ;;
@@ -148,6 +144,4 @@ echo -e "You can now reboot into your new NixOS system."
 echo -e "\n${BOLD}Next steps after first boot:${RESET}"
 echo -e "  1. Log in with user: ${YELLOW}user${RESET} | password: ${YELLOW}nix${RESET}"
 echo -e "  2. Change your password immediately: ${YELLOW}passwd${RESET}"
-echo -e "  3. Enroll TPM 2.0 for passwordless encrypted boot:"
-echo -e "     ${YELLOW}sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+2+7 <LUKS_PARTITION>${RESET}"
-echo -e "  4. Detach Flex Keyboard and hold ${YELLOW}Esc${RESET} for 4 seconds to test wireless typing."
+echo -e "  3. Detach Flex Keyboard and hold ${YELLOW}Esc${RESET} for 4 seconds to test wireless typing."

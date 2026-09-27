@@ -19,8 +19,8 @@ This build integrates **[`niri-tablet`](https://github.com/GGEZUS/niri-tablet)**
 | **Sensors** | Accelerometer, Gyroscope, ALS | `iio-sensor-proxy` + automatic display rotation daemon |
 | **Keyboard** | Surface Pro Flex Keyboard (Detached & Docked) | Hardwired via SAM when docked; pre-shared BlueZ LTK when detached |
 | **Audio** | Intel SoundWire / Realtek | Low-latency PipeWire + WirePlumber + SOF firmware |
-| **Sleep** | Modern Standby (S0ix) + S4 Hibernation | `s2idle` + 24 GB encrypted swapfile (`suspend-then-hibernate`) |
-| **Security** | Hardware TPM 2.0 | Passwordless LUKS auto-unlock via `systemd-cryptenroll` |
+| **Sleep** | Modern Standby (S0ix) + S4 Hibernation | `s2idle` + 24 GB Btrfs swapfile (`suspend-then-hibernate`) |
+| **Boot / Storage** | Unencrypted Btrfs Subvolumes | Direct fast boot without initrd password prompts |
 
 ---
 
@@ -97,11 +97,6 @@ Choose **Option 1 (Dual-Boot)** to install into the free space while preserving 
    ```bash
    passwd
    ```
-4. **Enroll TPM 2.0 for Passwordless Encrypted Boot**:
-   ```bash
-   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+2+7 /dev/nvme0n1p5
-   ```
-   *(Replace `/dev/nvme0n1p5` with your encrypted partition if different).*
 
 ---
 
