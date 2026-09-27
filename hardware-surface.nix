@@ -67,15 +67,26 @@
 
 
   boot.kernelParams = [
+    # S0ix Modern Standby
     "mem_sleep_default=s2idle"
-    "i915.enable_guc=3"
+
+    # Disable Panel Self Refresh (PSR/PSR2) - known cause of Intel display/GPU lockup & reset on sleep
+    "i915.enable_psr=0"
+    "xe.enable_psr=0"
+
+    # Disable Intel TCO hardware watchdog to prevent unlogged hard resets during S0ix transitions
+    "nowatchdog"
+    "modprobe.blacklist=iTCO_wdt,iTCO_vendor_support"
+
     "pci=pcie_bus_perf"
   ];
 
-  # Suspend-then-Hibernate: Protect battery life by hibernating to swap after 30 mins
+  # S0ix Power Management: Use "freeze" (s2idle). NEVER use "mem" (S3 is unsupported on Surface Pro 10)
   systemd.sleep.settings.Sleep = {
+    AllowSuspend = "yes";
+    AllowHibernation = "yes";
+    SuspendState = "freeze";
     HibernateDelaySec = "1800";
-    SuspendState = "mem";
   };
   environment.systemPackages = with pkgs; [
     surface-control

@@ -37,6 +37,15 @@ in
       eval "''$(mise activate bash)"
     fi
   '';
+  # Power Management & Lid Switch Handling (clean S0ix suspend)
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "suspend";
+    HandleLidSwitchDocked = "ignore";
+    HandlePowerKey = "suspend";
+    HandlePowerKeyLongPress = "poweroff";
+  };
+
 
 
 
