@@ -66,7 +66,7 @@ cd /etc/nixos
 sudo git pull origin main
 
 # 2. Switch to the new configuration
-sudo nixos-rebuild switch --flake .#surface-pro10
+sudo nixos-rebuild switch --flake .#fury
 ```
 
 ---

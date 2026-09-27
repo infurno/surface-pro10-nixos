@@ -7,7 +7,7 @@ let
   surfaceBluetooth = pkgs.writeShellScriptBin "surface-bluetooth" (builtins.readFile ./scripts/surface-bluetooth.sh);
 in
 {
-  networking.hostName = "surface-pro10";
+  networking.hostName = "fury";
   networking.networkmanager.enable = true;
   programs.nm-applet.enable = true;
   services.blueman.enable = true;
@@ -123,6 +123,8 @@ in
     fuzzel
     bluez-tools
     kitty
+    git
+    gh
     waybar
     mako
     networkmanagerapplet
@@ -154,12 +156,18 @@ in
   ];
 
   # Primary User Account
-  users.users.user = {
+  users.users.hal = {
     isNormalUser = true;
-    initialPassword = "nix"; # Change immediately after install via `passwd`
-    extraGroups = [ "wheel" "networkmanager" "video" "input" ];
+    description = "Hal Borland";
+    initialPassword = "nix";
+    extraGroups = [ "wheel" "networkmanager" "video" "input" "docker" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOachvLQon4o3w5FGc/OAkp/Jz/PYEyqFRK3sDEhyL4X rogue->gambit (nixos)"
+    ];
   };
 
+  # Passwordless sudo for convenience
+  security.sudo.wheelNeedsPassword = false;
   # Nix Package Manager Configuration
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];

@@ -38,7 +38,7 @@
       });
     };
   in {
-    nixosConfigurations.surface-pro10 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.fury = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = { inherit inputs serpantinum; };
       modules = [
@@ -54,7 +54,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit serpantinum; };
-          home-manager.users.user = import ./home.nix;
+          home-manager.users.hal = import ./home.nix;
         }
 
         {
@@ -62,5 +62,8 @@
         }
       ];
     };
+
+    # Alias for backward compatibility
+    nixosConfigurations.surface-pro10 = self.nixosConfigurations.fury;
   };
 }

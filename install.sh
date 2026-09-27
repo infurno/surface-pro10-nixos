@@ -116,32 +116,32 @@ mkdir -p /mnt/etc/nixos
 cp -a "$REPO_DIR"/. /mnt/etc/nixos/
 
 echo -e "\n${BOLD}[*] Deploying User Dotfiles (Niri, Waybar, Fuzzel, Mako)...${RESET}"
-mkdir -p /mnt/home/user/.config/{niri,waybar,fuzzel,mako}
-mkdir -p /mnt/home/user/.local/bin
+mkdir -p /mnt/home/hal/.config/{niri,waybar,fuzzel,mako}
+mkdir -p /mnt/home/hal/.local/bin
 
-cp "$REPO_DIR"/dotfiles/niri/config.kdl /mnt/home/user/.config/niri/
-cp "$REPO_DIR"/dotfiles/waybar/config.jsonc /mnt/home/user/.config/waybar/
-cp "$REPO_DIR"/dotfiles/waybar/style.css /mnt/home/user/.config/waybar/
-cp "$REPO_DIR"/dotfiles/fuzzel/fuzzel.ini /mnt/home/user/.config/fuzzel/
-cp "$REPO_DIR"/dotfiles/mako/config /mnt/home/user/.config/mako/
-cp "$REPO_DIR"/scripts/niri-osk.sh /mnt/home/user/.local/bin/
-cp "$REPO_DIR"/scripts/niri-rotate.sh /mnt/home/user/.local/bin/
-chmod +x /mnt/home/user/.local/bin/*.sh
+cp "$REPO_DIR"/dotfiles/niri/config.kdl /mnt/home/hal/.config/niri/
+cp "$REPO_DIR"/dotfiles/waybar/config.jsonc /mnt/home/hal/.config/waybar/
+cp "$REPO_DIR"/dotfiles/waybar/style.css /mnt/home/hal/.config/waybar/
+cp "$REPO_DIR"/dotfiles/fuzzel/fuzzel.ini /mnt/home/hal/.config/fuzzel/
+cp "$REPO_DIR"/dotfiles/mako/config /mnt/home/hal/.config/mako/
+cp "$REPO_DIR"/scripts/niri-osk.sh /mnt/home/hal/.local/bin/
+cp "$REPO_DIR"/scripts/niri-rotate.sh /mnt/home/hal/.local/bin/
+chmod +x /mnt/home/hal/.local/bin/*.sh
 
 # Initial ownership for standard user (uid 1000)
-chown -R 1000:100 /mnt/home/user 2>/dev/null || true
+chown -R 1000:100 /mnt/home/hal 2>/dev/null || true
 
 echo -e "\n${BOLD}${GREEN}================================================================${RESET}"
-echo -e "${BOLD}${GREEN}   Starting NixOS Installation via Flake (.#surface-pro10)      ${RESET}"
+echo -e "${BOLD}${GREEN}   Starting NixOS Installation via Flake (.#fury)               ${RESET}"
 echo -e "${BOLD}${GREEN}================================================================${RESET}"
 
-nixos-install --flake /mnt/etc/nixos#surface-pro10 --no-root-passwd
+nixos-install --flake /mnt/etc/nixos#fury --no-root-passwd
 
 echo -e "\n${BOLD}${GREEN}================================================================${RESET}"
 echo -e "${BOLD}${GREEN}   Installation Complete!                                       ${RESET}"
 echo -e "${BOLD}${GREEN}================================================================${RESET}"
 echo -e "You can now reboot into your new NixOS system."
 echo -e "\n${BOLD}Next steps after first boot:${RESET}"
-echo -e "  1. Log in with user: ${YELLOW}user${RESET} | password: ${YELLOW}nix${RESET}"
+echo -e "  1. Log in with user: ${YELLOW}hal${RESET} | password: ${YELLOW}nix${RESET}"
 echo -e "  2. Change your password immediately: ${YELLOW}passwd${RESET}"
 echo -e "  3. Detach Flex Keyboard and hold ${YELLOW}Esc${RESET} for 4 seconds to test wireless typing."

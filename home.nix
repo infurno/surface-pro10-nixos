@@ -3,8 +3,8 @@
 {
   imports = [ serpantinum.homeManagerModules.default ];
 
-  home.username = "user";
-  home.homeDirectory = "/home/user";
+  home.username = "hal";
+  home.homeDirectory = "/home/hal";
   home.stateVersion = "24.11";
 
   # Serpantinum Desktop Shell (Liquid Glass theme, top modular bar)
@@ -44,7 +44,7 @@
         pink = "#d47cf5";
       };
 
-      wallpaperDir = "/home/user/Pictures/Wallpapers";
+      wallpaperDir = "/home/hal/Pictures/Wallpapers";
     };
   };
 
@@ -89,6 +89,8 @@
   # Essential user tools
   home.packages = with pkgs; [
     kitty
+    git
+    gh
     starship
     eza
     bat
