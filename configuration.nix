@@ -24,6 +24,13 @@ in
   environment.extraInit = ''
     export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
   '';
+  # Automatically activate mise in all interactive bash sessions (keeps omp available)
+  programs.bash.interactiveShellInit = ''
+    if command -v mise >/dev/null 2>&1; then
+      eval "''$(mise activate bash)"
+    fi
+  '';
+
 
 
 
@@ -141,6 +148,8 @@ in
     kitty
     git
     gh
+    btop
+    neovim
     waybar
     mako
     networkmanagerapplet

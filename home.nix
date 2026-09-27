@@ -85,6 +85,16 @@
     gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
     gtk4.theme = config.gtk.theme;
   };
+  # Automatically hook mise in bash interactive sessions
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      if command -v mise >/dev/null 2>&1; then
+        eval "''$(mise activate bash)"
+      fi
+    '';
+  };
+
 
   # Declaratively manage niri config.kdl
   xdg.configFile."niri/config.kdl" = {
@@ -98,6 +108,8 @@
     mise
     git
     gh
+    btop
+    neovim
     starship
     eza
     bat
