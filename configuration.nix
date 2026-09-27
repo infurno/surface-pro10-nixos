@@ -20,6 +20,11 @@ in
   };
   # Foreign binary compatibility (allows prebuilt binaries like omp/oh-my-pi to run)
   programs.nix-ld.enable = true;
+  # System-wide PATH initialization (ensures ~/.local/bin and mise shims are on PATH for all shells)
+  environment.extraInit = ''
+    export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+  '';
+
 
 
 
