@@ -52,6 +52,14 @@
     "usb_storage"
     "sd_mod"
   ];
+  boot.kernelModules = [
+    "surface_aggregator"
+    "surface_aggregator_registry"
+    "surface_hid"
+    "surface_kbd"
+    "intel_vpu"
+  ];
+
 
   boot.kernelParams = [
     "mem_sleep_default=s2idle"

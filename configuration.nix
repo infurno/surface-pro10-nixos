@@ -7,6 +7,8 @@ in
 {
   networking.hostName = "surface-pro10";
   networking.networkmanager.enable = true;
+  programs.nm-applet.enable = true;
+  services.blueman.enable = true;
 
   # Dual-Boot systemd-boot with auto-detected Windows 11
   boot.loader = {
@@ -104,6 +106,9 @@ in
     fuzzel
     waybar
     mako
+    networkmanagerapplet
+    blueman
+    util-linux
 
     # Clipboard, Display & Hardware Tools
     wl-clipboard

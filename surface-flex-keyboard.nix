@@ -48,20 +48,36 @@ in
     };
   };
 
-  # Declaratively inject keys into BlueZ before service startup
+  # Always ensure Bluetooth is unblocked on boot
+  systemd.services.bluetooth.serviceConfig.ExecStartPre = "${pkgs.util-linux}/bin/rfkill unblock bluetooth";
+
+  # Declaratively inject keys into BlueZ unconditionally
   system.activationScripts.surfaceFlexBluetoothKeys = {
     text = ''
+      mkdir -p /var/lib/bluetooth
+      chmod 700 /var/lib/bluetooth
       mkdir -p "${bluetoothDir}"
-      chmod 700 /var/lib/bluetooth /var/lib/bluetooth/${hostMac} "${bluetoothDir}"
+      chmod 700 "/var/lib/bluetooth/${hostMac}" "${bluetoothDir}"
 
-      if [ ! -f "${bluetoothDir}/info" ]; then
-        echo "Injecting Surface Pro Flex Keyboard pre-shared LTK keys..."
-        cat > "${bluetoothDir}/info" << 'EOF'
+      echo "Injecting Surface Pro Flex Keyboard pre-shared LTK keys..."
+      cat > "${bluetoothDir}/info" << 'EOF'
 ${bluezInfoContent}
 EOF
-        chmod 600 "${bluetoothDir}/info"
-        chown -R root:root /var/lib/bluetooth
-      fi
+      chmod 600 "${bluetoothDir}/info"
+
+      # Also sync keys to any other active controller MAC directories
+      for adp in /var/lib/bluetooth/*/; do
+        if [ -d "$adp" ] && [ "$(basename "$adp")" != "${deviceMac}" ]; then
+          mkdir -p "$adp/${deviceMac}"
+          chmod 700 "$adp" "$adp/${deviceMac}"
+          cat > "$adp/${deviceMac}/info" << 'EOF'
+${bluezInfoContent}
+EOF
+          chmod 600 "$adp/${deviceMac}/info"
+        fi
+      done
+
+      chown -R root:root /var/lib/bluetooth
     '';
   };
 }

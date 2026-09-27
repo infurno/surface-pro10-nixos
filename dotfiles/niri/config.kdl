@@ -108,6 +108,8 @@ layout {
 // -----------------------------------------------------------------------------
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
+spawn-at-startup "nm-applet" "--indicator"
+spawn-at-startup "blueman-applet"
 
 // -----------------------------------------------------------------------------
 // Window Rules
@@ -121,6 +123,16 @@ window-rule {
     match app-id="fuzzel"
     open-floating true
 }
+window-rule {
+    match app-id="nm-connection-editor"
+    open-floating true
+}
+
+window-rule {
+    match app-id="blueman-manager"
+    open-floating true
+}
+
 
 // -----------------------------------------------------------------------------
 // Keybindings (Keyboard / Type Cover Shortcuts)
@@ -134,6 +146,8 @@ binds {
     Mod+F      { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+Tab    { toggle-overview; }
+    Mod+N      { spawn "nm-connection-editor"; }
+    Mod+B      { spawn "blueman-manager"; }
 
     // Column & Workspace Navigation
     Mod+Left   { focus-column-left; }

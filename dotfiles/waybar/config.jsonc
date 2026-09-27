@@ -11,10 +11,13 @@
     "clock"
   ],
   "modules-right": [
+    "network",
+    "bluetooth",
     "backlight",
     "wireplumber",
     "battery",
-    "custom/keyboard"
+    "custom/keyboard",
+    "tray"
   ],
   "custom/launcher": {
     "format": " 󱓞 ",
@@ -28,6 +31,20 @@
   "clock": {
     "format": "{:%a %b %d  %I:%M %p}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+  "network": {
+    "format-wifi": "󰤨 {essid}",
+    "format-ethernet": "󰈀 {ipaddr}",
+    "format-disconnected": "󰤭 Disconnected",
+    "tooltip-format": "{ifname}: {ipaddr}",
+    "on-click": "nm-connection-editor"
+  },
+  "bluetooth": {
+    "format": "󰂯 {status}",
+    "format-connected": "󰂱 {device_alias}",
+    "format-disconnected": "󰂲",
+    "tooltip-format": "{controller_alias}\t{controller_address}",
+    "on-click": "blueman-manager"
   },
   "backlight": {
     "format": "{icon} {percent}%",
@@ -57,5 +74,9 @@
     "format": " 󰌌 ",
     "tooltip": false,
     "on-click": "niri-osk"
+  },
+  "tray": {
+    "icon-size": 20,
+    "spacing": 6
   }
 }
