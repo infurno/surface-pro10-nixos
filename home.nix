@@ -291,7 +291,7 @@ in
     cargo
     clang
     llvm
-    gcc
+    (lib.hiPrio gcc)
     gnumake
     cmake
     mise
