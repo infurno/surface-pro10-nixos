@@ -53,12 +53,17 @@
     "sd_mod"
   ];
   boot.kernelModules = [
+    "uhid"
     "surface_aggregator"
     "surface_aggregator_registry"
     "surface_hid"
     "surface_kbd"
     "intel_vpu"
   ];
+
+  boot.extraModprobeConfig = ''
+    options bluetooth disable_ertm=1
+  '';
 
 
   boot.kernelParams = [

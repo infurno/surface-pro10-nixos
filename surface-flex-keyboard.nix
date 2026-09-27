@@ -40,10 +40,17 @@ in
       General = {
         Experimental = true; # Exposes battery percentage to Waybar / UPower
         FastConnectable = true;
-        Privacy = "device";
+        Privacy = "off"; # MUST be off so adapter presents its static 40:C7:3C:2F:8D:6F MAC
+        JustWorksRepairing = "always";
+        Class = "0x000100";
       };
       Policy = {
         AutoEnable = true;
+      };
+    };
+    input = {
+      General = {
+        UserspaceHID = true;
       };
     };
   };

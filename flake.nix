@@ -31,11 +31,14 @@
     niriTabletPatches = map (name: patchDir + "/${name}") sortedPatchNames;
 
     # Overlay applying niri-tablet touchscreen patches to upstream niri
+    # Overlay applying niri-tablet touchscreen patches directly to upstream niri
+    # This ensures niri-session, niri.service, and all callsites execute the patched binary
     niriTabletOverlay = final: prev: {
-      niri-tablet = prev.niri.overrideAttrs (oldAttrs: {
-        pname = "niri-tablet";
+      niri = prev.niri.overrideAttrs (oldAttrs: {
         patches = (oldAttrs.patches or []) ++ niriTabletPatches;
       });
+      niri-tablet = final.niri;
+      niri-unstable = final.niri;
     };
   in {
     nixosConfigurations.fury = nixpkgs.lib.nixosSystem {
