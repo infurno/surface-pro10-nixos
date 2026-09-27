@@ -9,6 +9,13 @@ in
 {
   networking.hostName = "fury";
   networking.networkmanager.enable = true;
+  # Syncthing local network discovery & sync ports (rogue <-> fury <-> gambit)
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 8384 22000 ];
+    allowedUDPPorts = [ 22000 21027 ];
+  };
+
   programs.nm-applet.enable = true;
   services.blueman.enable = true;
   # Git System Configuration (allows git operations inside /etc/nixos)

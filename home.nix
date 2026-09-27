@@ -1,5 +1,25 @@
 { config, pkgs, lib, serpantinum, ... }:
 
+let
+  # Mole for Linux (system clean, app uninstall, disk analyzer - mo / mole)
+  mole = pkgs.stdenv.mkDerivation {
+    pname = "mole";
+    version = "unstable-2026";
+    src = pkgs.fetchFromGitHub {
+      owner = "ccyisafool";
+      repo = "mole-for-ubuntu-and-friends";
+      rev = "67b2039f1f64fa86ec0ce0d320bf83dfd4c6f442";
+      hash = "sha256-1nnX0LoRFOt4GUyHiZXR2hI9K1LU+UTs2LYJT0fUFdo=";
+    };
+    installPhase = ''
+      mkdir -p $out/bin $out/share/mole-ubuntu
+      cp -r * $out/share/mole-ubuntu/
+      ln -s $out/share/mole-ubuntu/mo $out/bin/mo
+      ln -s $out/share/mole-ubuntu/mo $out/bin/mole
+      chmod +x $out/share/mole-ubuntu/mo
+    '';
+  };
+in
 {
   imports = [ serpantinum.homeManagerModules.default ];
 
@@ -126,6 +146,8 @@
     # Agent & Tool Manager
     mise
     gh
+    syncthing
+    mole
     git
 
     # Shell / Navigation / Prompt
@@ -190,4 +212,23 @@
     brave
     firefox
   ];
+
+  # ----------------------------------------------------------------- syncthing --
+  # Continuous background file synchronization (syncthing serve)
+  # Matches rogue/gambit setup; config is managed via GUI at http://127.0.0.1:8384
+  systemd.user.services.syncthing = {
+    Unit = {
+      Description = "Syncthing - Open Source Continuous File Synchronization";
+      Documentation = [ "man:syncthing(1)" ];
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.syncthing}/bin/syncthing serve --no-browser --no-restart";
+      Restart = "on-failure";
+      RestartSec = 5;
+      SuccessExitStatus = "3 4";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
 }
