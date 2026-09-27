@@ -101,19 +101,93 @@
     source = ./dotfiles/niri/config.kdl;
     force = true;
   };
+  # Pre-configure all AI agent CLIs (omp, claude, codex, gemini, copilot, etc.)
+  xdg.configFile."mise/config.toml".text = ''
+    [tools]
+    "aqua:modem-dev/hunk" = "latest"
+    claude = "latest"
+    codex = "latest"
+    copilot = "latest"
+    crush = "latest"
+    gemini = { version = "latest", allow_builds = ["@github/keytar", "node-pty"] }
+    gh = "latest"
+    "github:can1357/oh-my-pi" = "latest"
+    node = "26.8.1"
+    "npm:@xai-official/grok" = "latest"
+    opencode = "latest"
 
-  # Essential user tools
+    [settings.upgrade]
+    auto_prune = false
+  '';
+
+
+  # Full Application & Tool Suite (parity with rogue)
   home.packages = with pkgs; [
-    kitty
+    # Agent & Tool Manager
     mise
-    git
     gh
-    btop
-    neovim
+    git
+
+    # Shell / Navigation / Prompt
+    kitty
     starship
+    zoxide
+    fzf
     eza
     bat
     ripgrep
-    fzf
+    fd
+    yazi
+    lazygit
+    difftastic
+
+    # System / Hardware / Monitor
+    btop
+    fastfetch
+    cpufetch
+    clinfo
+    dust
+    duf
+    cyme
+    hyperfine
+
+    # Text / Markdown / Formatters
+    neovim
+    glow
+    tldr
+    tokei
+    nixfmt
+    jq
+    yq-go
+
+    # Network / Transfer
+    wget
+    curl
+    curlie
+    httpie
+    croc
+    bandwhich
+    bmon
+    doggo
+    rsync
+    rclone
+
+    # Archives & Compression
+    unzip
+    tree
+
+    # Desktop Applications
+    obsidian
+    xournalpp
+    rnote
+    localsend
+    vlc
+    mpv
+    swappy
+    pavucontrol
+    easyeffects
+    pinta
+    brave
+    firefox
   ];
 }

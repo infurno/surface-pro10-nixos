@@ -193,6 +193,9 @@ in
 
   # Passwordless sudo for convenience
   security.sudo.wheelNeedsPassword = false;
+  # Allow unfree packages (Obsidian, Brave, Steam, etc.)
+  nixpkgs.config.allowUnfree = true;
+
   # Nix Package Manager Configuration
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
