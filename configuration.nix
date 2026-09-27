@@ -11,6 +11,14 @@ in
   networking.networkmanager.enable = true;
   programs.nm-applet.enable = true;
   services.blueman.enable = true;
+  # Git System Configuration (allows git operations inside /etc/nixos)
+  programs.git = {
+    enable = true;
+    config = {
+      safe.directory = [ "/etc/nixos" "/etc/nixos/*" ];
+    };
+  };
+
 
   # Dual-Boot systemd-boot with auto-detected Windows 11
   boot.loader = {
