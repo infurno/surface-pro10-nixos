@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   niriOsk = pkgs.writeShellScriptBin "niri-osk" (builtins.readFile ./scripts/niri-osk.sh);
@@ -84,16 +84,16 @@ in
     };
   };
 
-  # Display Manager (greetd with tuigreet)
-  services.greetd = {
+  # Display Manager: SDDM with Wayland support and touch-friendly greeter
+  services.displayManager.sddm = {
     enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
-        user = "greeter";
-      };
-    };
+    wayland.enable = true;
   };
+  services.displayManager.defaultSession = lib.mkForce "plasma";
+
+
+  # Desktop Environment: KDE Plasma 6 (brings BlueDevil, plasma-nm, and KDE Bluetooth stack)
+  services.desktopManager.plasma6.enable = true;
 
   # System Environment & Tablet Packages
   environment.systemPackages = with pkgs; [
