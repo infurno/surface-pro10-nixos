@@ -203,6 +203,18 @@ in
       icon = "photos";
       categories = [ "Graphics" "Photography" ];
     };
+    google-contacts = {
+      name = "Google Contacts";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://contacts.google.com";
+      icon = "x-office-address-book";
+      categories = [ "Office" ];
+    };
+    microsoft-copilot = {
+      name = "Microsoft Copilot";
+      exec = "${pkgs.chromium}/bin/chromium --app=https://copilot.microsoft.com";
+      icon = "system-help";
+      categories = [ "Utility" ];
+    };
     tailscale-admin = {
       name = "Tailscale Admin";
       exec = "${pkgs.chromium}/bin/chromium --app=https://login.tailscale.com/admin";
