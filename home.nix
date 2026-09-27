@@ -6,6 +6,12 @@
   home.username = "hal";
   home.homeDirectory = "/home/hal";
   home.stateVersion = "24.11";
+  # Put ~/.local/bin and mise shims on PATH for omp (oh-my-pi)
+  home.sessionPath = [
+    "$HOME/.local/bin"
+    "$HOME/.local/share/mise/shims"
+  ];
+
 
   # Serpantinum Desktop Shell (Liquid Glass theme, top modular bar)
   programs.serpantinum = {
@@ -89,6 +95,7 @@
   # Essential user tools
   home.packages = with pkgs; [
     kitty
+    mise
     git
     gh
     starship

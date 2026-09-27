@@ -18,6 +18,9 @@ in
       safe.directory = [ "/etc/nixos" "/etc/nixos/*" ];
     };
   };
+  # Foreign binary compatibility (allows prebuilt binaries like omp/oh-my-pi to run)
+  programs.nix-ld.enable = true;
+
 
 
   # Dual-Boot systemd-boot with auto-detected Windows 11
