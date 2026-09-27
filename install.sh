@@ -11,6 +11,8 @@ YELLOW="\033[33m"
 RED="\033[31m"
 BLUE="\033[34m"
 RESET="\033[0m"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 
 echo -e "${BOLD}${BLUE}================================================================${RESET}"
 echo -e "${BOLD}${BLUE}   Surface Pro 10 for Business - NixOS Installation Assistant   ${RESET}"
@@ -115,19 +117,19 @@ nixos-generate-config --no-filesystems --root /mnt
 
 echo -e "\n${BOLD}[*] Copying repository to target /etc/nixos...${RESET}"
 mkdir -p /mnt/etc/nixos
-cp -r ./* /mnt/etc/nixos/
+cp -a "$REPO_DIR"/. /mnt/etc/nixos/
 
 echo -e "\n${BOLD}[*] Deploying User Dotfiles (Niri, Waybar, Fuzzel, Mako)...${RESET}"
 mkdir -p /mnt/home/user/.config/{niri,waybar,fuzzel,mako}
 mkdir -p /mnt/home/user/.local/bin
 
-cp dotfiles/niri/config.kdl /mnt/home/user/.config/niri/
-cp dotfiles/waybar/config.jsonc /mnt/home/user/.config/waybar/
-cp dotfiles/waybar/style.css /mnt/home/user/.config/waybar/
-cp dotfiles/fuzzel/fuzzel.ini /mnt/home/user/.config/fuzzel/
-cp dotfiles/mako/config /mnt/home/user/.config/mako/
-cp scripts/niri-osk.sh /mnt/home/user/.local/bin/
-cp scripts/niri-rotate.sh /mnt/home/user/.local/bin/
+cp "$REPO_DIR"/dotfiles/niri/config.kdl /mnt/home/user/.config/niri/
+cp "$REPO_DIR"/dotfiles/waybar/config.jsonc /mnt/home/user/.config/waybar/
+cp "$REPO_DIR"/dotfiles/waybar/style.css /mnt/home/user/.config/waybar/
+cp "$REPO_DIR"/dotfiles/fuzzel/fuzzel.ini /mnt/home/user/.config/fuzzel/
+cp "$REPO_DIR"/dotfiles/mako/config /mnt/home/user/.config/mako/
+cp "$REPO_DIR"/scripts/niri-osk.sh /mnt/home/user/.local/bin/
+cp "$REPO_DIR"/scripts/niri-rotate.sh /mnt/home/user/.local/bin/
 chmod +x /mnt/home/user/.local/bin/*.sh
 
 # Initial ownership for standard user (uid 1000)

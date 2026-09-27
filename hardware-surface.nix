@@ -45,6 +45,14 @@
   services.power-profiles-daemon.enable = true;
   services.thermald.enable = true;
 
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "thunderbolt"
+    "nvme"
+    "usb_storage"
+    "sd_mod"
+  ];
+
   boot.kernelParams = [
     "mem_sleep_default=s2idle"
     "i915.enable_guc=3"
