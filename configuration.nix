@@ -3,6 +3,8 @@
 let
   niriOsk = pkgs.writeShellScriptBin "niri-osk" (builtins.readFile ./scripts/niri-osk.sh);
   niriRotate = pkgs.writeShellScriptBin "niri-rotate" (builtins.readFile ./scripts/niri-rotate.sh);
+  surfaceWifi = pkgs.writeShellScriptBin "surface-wifi" (builtins.readFile ./scripts/surface-wifi.sh);
+  surfaceBluetooth = pkgs.writeShellScriptBin "surface-bluetooth" (builtins.readFile ./scripts/surface-bluetooth.sh);
 in
 {
   networking.hostName = "surface-pro10";
@@ -84,26 +86,43 @@ in
     };
   };
 
-  # Display Manager: SDDM with Wayland support and touch-friendly greeter
-  services.displayManager.sddm = {
+  # Display Manager (greetd with tuigreet)
+  services.greetd = {
     enable = true;
-    wayland.enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd niri-session";
+        user = "greeter";
+      };
+    };
   };
-  services.displayManager.defaultSession = lib.mkForce "plasma";
 
-
-  # Desktop Environment: KDE Plasma 6 (brings BlueDevil, plasma-nm, and KDE Bluetooth stack)
-  services.desktopManager.plasma6.enable = true;
+  # Headless Bluetooth Agent (auto-accepts pairing & authentication on the system bus)
+  # This is the exact fix from gambit that makes BLE keyboards pair without a full desktop environment
+  systemd.user.services.bluetooth-agent = {
+    description = "Bluetooth pairing agent (bt-agent)";
+    after = [ "bluetooth.target" ];
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.bluez-tools}/bin/bt-agent -c NoInputNoOutput";
+      Restart = "on-failure";
+      RestartSec = "3s";
+    };
+  };
 
   # System Environment & Tablet Packages
   environment.systemPackages = with pkgs; [
     # Custom Surface Tablet Scripts
     niriOsk
     niriRotate
+    surfaceWifi
+    surfaceBluetooth
 
     # Virtual Keyboard & UI Components
     wvkbd
     fuzzel
+    bluez-tools
+    kitty
     waybar
     mako
     networkmanagerapplet

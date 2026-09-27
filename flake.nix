@@ -1,5 +1,5 @@
 {
-  description = "Surface Pro 10 for Business - NixOS with niri-tablet & Flex Keyboard";
+  description = "Surface Pro 10 for Business - NixOS with niri-tablet & Serpantinum";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -8,9 +8,17 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    serpantinum = {
+      url = "github:ilyamiro/serpantinum";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, disko, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-hardware, disko, home-manager, serpantinum, ... }@inputs:
   let
     system = "x86_64-linux";
 
@@ -32,13 +40,23 @@
   in {
     nixosConfigurations.surface-pro10 = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit inputs; };
+      specialArgs = { inherit inputs serpantinum; };
       modules = [
         disko.nixosModules.disko
         ./disko.nix
         ./hardware-surface.nix
         ./surface-flex-keyboard.nix
         ./configuration.nix
+
+        serpantinum.nixosModules.default
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = { inherit serpantinum; };
+          home-manager.users.user = import ./home.nix;
+        }
+
         {
           nixpkgs.overlays = [ niriTabletOverlay ];
         }

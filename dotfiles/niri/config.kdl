@@ -1,5 +1,6 @@
 // =============================================================================
-// Surface Pro 10 for Business - Niri Configuration (niri-tablet enabled)
+// Surface Pro 10 for Business - Niri Configuration
+// Liquid Glass Theme + Serpantinum Desktop Shell + niri-tablet Touch Gestures
 // =============================================================================
 
 // Display: 13" PixelSense Flow (2880x1920, 3:2, 120Hz)
@@ -10,7 +11,9 @@ output "eDP-1" {
     variable-refresh-rate
 }
 
-// Input Configuration: Touchscreen & Surface Type Cover Touchpad
+// -----------------------------------------------------------------------------
+// Input Devices: Touchscreen, Touchpad, Keyboard
+// -----------------------------------------------------------------------------
 input {
     touch {
         map-to-output "eDP-1"
@@ -18,11 +21,11 @@ input {
     touchpad {
         tap
         natural-scroll
+        dwt
         accel-speed 0.2
-        scroll-method "two-finger"
     }
     mouse {
-        accel-speed 0.0
+        accel-profile "adaptive"
     }
     keyboard {
         xkb {
@@ -34,68 +37,24 @@ input {
 }
 
 // -----------------------------------------------------------------------------
-// niri-tablet Touchscreen Gestures & Edge Swipes
-// -----------------------------------------------------------------------------
-gestures {
-    // Show visual feedback dots while a multi-finger touch gesture is active
-    show-touch-points "gestures"
-
-    // Multi-finger touchscreen gestures
-    touchscreen-swipe {
-        // Base finger count for continuous interactions
-        fingers 3
-
-        // Horizontal 3-finger drag: "resize-column" for 1:1 window width tracking,
-        // or "move-view" to glide across the horizontal window ribbon.
-        horizontal-swipe "resize-column"
-
-        // Discrete gestures (trigger on finger lift)
-        tap             { maximize-column; }
-        tap-more        { toggle-overview; }
-        swipe-more-down { close-window; }
-        swipe-more-up   { fullscreen-window; }
-
-        // Press and hold ~400ms, then swipe: moves focused window across columns/workspaces
-        hold {
-            left  { move-column-left; }
-            right { move-column-right; }
-            up    { move-window-to-workspace-up; }
-            down  { move-window-to-workspace-down; }
-        }
-    }
-
-    // Single-finger edge swipes
-    touchscreen-edge-swipe {
-        // Bottom edge swipe up: Toggle on-screen keyboard
-        bottom { spawn "niri-osk"; }
-        // Top edge swipe down: Toggle Niri window overview
-        top    { toggle-overview; }
-        // Left edge swipe: Navigate left column
-        left   { focus-column-left; }
-        // Right edge swipe: Navigate right column
-        right  { focus-column-right; }
-    }
-}
-
-// -----------------------------------------------------------------------------
-// Layout & Appearance
+// Layout & Liquid Glass Theme (Omarchy-styled)
 // -----------------------------------------------------------------------------
 layout {
-    gaps 12
-    center-focused-column "never"
+    gaps 8
+    background-color "#050506"
 
     preset-column-widths {
         proportion 0.33333
         proportion 0.5
         proportion 0.66667
-        proportion 1.0
     }
     default-column-width { proportion 0.5; }
 
+    // Liquid Glass focus ring gradient
     focus-ring {
-        width 3
-        active-color "#7aa2f7"
-        inactive-color "#414868"
+        width 2
+        active-gradient from="#ffffffee" to="#0a84ffee" angle=45
+        inactive-gradient from="#3a455288" to="#05050688" angle=45
     }
 
     border {
@@ -103,26 +62,46 @@ layout {
     }
 }
 
-// -----------------------------------------------------------------------------
-// Startup Services
-// -----------------------------------------------------------------------------
-spawn-at-startup "waybar"
-spawn-at-startup "mako"
-spawn-at-startup "nm-applet" "--indicator"
-spawn-at-startup "blueman-applet"
+prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
 
 // -----------------------------------------------------------------------------
-// Window Rules
+// Window & Layer Rules (Liquid Glass Blur & Corners)
 // -----------------------------------------------------------------------------
+window-rule {
+    background-effect {
+        blur true
+        xray false
+        noise 0.02
+        saturation 1.0
+    }
+    geometry-corner-radius 14
+    clip-to-geometry true
+    opacity 0.95
+    shadow {
+        on
+        softness 30
+        spread 2
+        offset x=0 y=6
+        color "#050506cc"
+        inactive-color "#05050677"
+    }
+}
+
+window-rule {
+    match is-active=false
+    opacity 0.88
+}
+
+// Floating utilities
 window-rule {
     match app-id="wvkbd"
     open-floating true
 }
 
-window-rule {
-    match app-id="fuzzel"
-    open-floating true
-}
 window-rule {
     match app-id="nm-connection-editor"
     open-floating true
@@ -133,39 +112,147 @@ window-rule {
     open-floating true
 }
 
+// Serpantinum Quickshell surfaces
+layer-rule {
+    match namespace="^quickshell$"
+    geometry-corner-radius 14
+}
+
+layer-rule {
+    match namespace="^qs-floating-overlay$"
+    geometry-corner-radius 14
+
+    popups {
+        opacity 0.92
+        geometry-corner-radius 12
+        background-effect {
+            blur true
+            noise 0.02
+        }
+    }
+}
 
 // -----------------------------------------------------------------------------
-// Keybindings (Keyboard / Type Cover Shortcuts)
+// niri-tablet Touchscreen Gestures & Edge Swipes
+// -----------------------------------------------------------------------------
+gestures {
+    // Show touch point feedback dots while gestures are in motion
+    show-touch-points "gestures"
+
+    // Multi-finger touchscreen gestures
+    touchscreen-swipe {
+        fingers 3
+
+        // 3-finger horizontal drag: 1:1 window column width resize
+        horizontal-swipe "resize-column"
+
+        // Discrete finger-lift actions
+        tap             { maximize-column; }
+        tap-more        { toggle-overview; }
+        swipe-more-down { close-window; }
+        swipe-more-up   { fullscreen-window; }
+
+        // Press, hold ~400ms, then swipe: moves window across columns/workspaces
+        hold {
+            left  { move-column-left; }
+            right { move-column-right; }
+            up    { move-window-to-workspace-up; }
+            down  { move-window-to-workspace-down; }
+        }
+    }
+
+    // Touchscreen edge swipes
+    touchscreen-edge-swipe {
+        // Bottom edge swipe up: Toggle orientation-aware On-Screen Keyboard
+        bottom { spawn "niri-osk"; }
+
+        // Top edge swipe down: Open Serpantinum launcher
+        top    { spawn "serpantinum" "msg" "toggle" "launcher"; }
+
+        // Left / Right edge swipe: Move column focus
+        left   { focus-column-left; }
+        right  { focus-column-right; }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Keybindings (Omarchy / Serpantinum / Media controls)
 // -----------------------------------------------------------------------------
 binds {
-    // Core application binds
-    Mod+Return { spawn "alacritty"; }
-    Mod+Space  { spawn "fuzzel"; }
-    Mod+Q      { close-window; }
-    Mod+K      { spawn "niri-osk"; }
-    Mod+F      { maximize-column; }
-    Mod+Shift+F { fullscreen-window; }
-    Mod+Tab    { toggle-overview; }
-    Mod+N      { spawn "nm-connection-editor"; }
-    Mod+B      { spawn "blueman-manager"; }
+    // Terminal & Core Apps
+    Mod+Return       { spawn "kitty"; }
+    Mod+Shift+Return { spawn "firefox"; }
+    Mod+Shift+F      { spawn "nautilus"; }
 
-    // Column & Workspace Navigation
-    Mod+Left   { focus-column-left; }
-    Mod+Right  { focus-column-right; }
-    Mod+Up     { focus-workspace-up; }
-    Mod+Down   { focus-workspace-down; }
+    // Serpantinum Desktop Shell controls
+    Mod+Space  { spawn "serpantinum" "msg" "toggle" "launcher"; }
+    Mod+Ctrl+V { spawn "serpantinum" "msg" "toggle" "clipboard"; }
+    Mod+Ctrl+W { spawn "serpantinum" "msg" "open" "network" "wifi"; }
+    Mod+Ctrl+L { spawn "serpantinum" "lock"; }
+
+    // Tablet Virtual Keyboard toggle
+    Mod+K      { spawn "niri-osk"; }
+    Mod+Shift+K { show-hotkey-overlay; }
+
+    // Window Management (Omarchy conventions)
+    Mod+W       { close-window; }
+    Mod+F       { fullscreen-window; }
+    Mod+Ctrl+F  { toggle-windowed-fullscreen; }
+    Mod+T       { toggle-window-floating; }
+    Mod+Alt+M   { maximize-column; }
+    Mod+O       { toggle-overview; }
+
+    // Focus & Movement (Arrow keys)
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up    { focus-window-up; }
+    Mod+Down  { focus-window-down; }
 
     Mod+Shift+Left  { move-column-left; }
     Mod+Shift+Right { move-column-right; }
-    Mod+Shift+Up    { move-window-to-workspace-up; }
-    Mod+Shift+Down  { move-window-to-workspace-down; }
+    Mod+Shift+Up    { move-window-up; }
+    Mod+Shift+Down  { move-window-down; }
 
-    // Audio & Volume controls (Surface hardware volume rocker & keyboard keys)
+    // Workspaces
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+0 { focus-workspace 10; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+    Mod+Shift+0 { move-column-to-workspace 10; }
+
+    Mod+Tab       { focus-workspace-down; }
+    Mod+Shift+Tab { focus-workspace-up; }
+
+    // Column Sizing
+    Mod+R          { switch-preset-column-width; }
+    Mod+Minus      { set-column-width "-10%"; }
+    Mod+Equal      { set-column-width "+10%"; }
+
+    // Hardware Audio & Brightness keys (Surface rocker & keyboard keys)
     XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
     XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
-
-    // Display Brightness controls
     XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "+5%"; }
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
+
+    // Screenshots
+    Print           { screenshot; }
+    Mod+Print       { spawn "niri" "msg" "pick-color"; }
+    Mod+Shift+Print { screenshot-screen; }
 }
